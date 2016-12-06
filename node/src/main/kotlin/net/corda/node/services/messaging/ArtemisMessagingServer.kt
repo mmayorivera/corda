@@ -184,8 +184,9 @@ class ArtemisMessagingServer(override val config: NodeConfiguration,
         securityRoles["$INTERNAL_PREFIX#"] = setOf(nodeInternalRole)  // Do not add any other roles here as it's only for the node
         securityRoles[P2P_QUEUE] = setOf(nodeInternalRole, restrictedRole(PEER_ROLE, send = true))
         securityRoles[RPC_REQUESTS_QUEUE] = setOf(nodeInternalRole, restrictedRole(RPC_ROLE, send = true))
-        // TODO remove NODE_USER once webserver doesn't need it
-        val possibleClientUserNames = userService.users.map { it.username } + listOf(NODE_USER)
+        // TODO remove the NODE_USER role once the webserver doesn't need it
+        securityRoles["$CLIENTS_PREFIX$NODE_USER.rpc.*"] = setOf(nodeInternalRole)
+        val possibleClientUserNames = userService.users.map { it.username }
         for (username in possibleClientUserNames) {
             securityRoles["$CLIENTS_PREFIX$username.rpc.*"] = setOf(
                     nodeInternalRole,
